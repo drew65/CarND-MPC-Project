@@ -86,20 +86,42 @@ int main() {
         if (event == "telemetry") {
           // j[1] is the data JSON object
           vector<double> ptsx = j[1]["ptsx"];
+          //Eigen::VectorXd ptsx = j[1]["ptsx"];
           vector<double> ptsy = j[1]["ptsy"];
+          //Eigen::VectorXd ptsy = j[1]["ptsy"];
           double px = j[1]["x"];
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
 
+
+          //double* ptrx = &ptsx[0];
+          //Eigen::Map<Eigen::VectorXd> x_vect(ptrx, 4);
+
+          //std::vector<double> a = {1, 2, 3, 4};
+          Eigen::VectorXd x_vect = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(ptsx.data(), ptsx.size());
+          Eigen::VectorXd y_vect = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(ptsy.data(), ptsy.size());
+          // The polynomial is a polynomial with order 3 .
+          auto coeffs = polyfit(x_vect, y_vect, 3);
+          //Eigen::VectorXd coeffs(3);
+          // The cross track error is calculated by evaluating at polynomial at x, f(x) and subtracting y.
+          double cte = polyeval(coeffs, px) - py;
+
+          // derivative of coeffs[0] + coeffs[1] * x + coeff[2] * x * x-> coeffs[1] + 2 * coeff[2] * x
+          double epsi = psi - atan(coeffs[1]+2*px*coeffs[2]);
           /*
           * TODO: Calculate steering angle and throttle using MPC.
           *
           * Both are in between [-1, 1].
           *
           */
+          Eigen::VectorXd state(6);
+          state << px, py, psi, v, cte, epsi;
           double steer_value;
           double throttle_value;
+          auto vars  = mpc.Solve(state, coeffs);
+          steer_value = vars[0];
+          throttle_value = vars[1];
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
@@ -107,7 +129,7 @@ int main() {
           msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = throttle_value;
 
-          //Display the MPC predicted trajectory 
+          //Display the MPC predicted trajectory
           vector<double> mpc_x_vals;
           vector<double> mpc_y_vals;
 

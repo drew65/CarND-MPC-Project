@@ -17,7 +17,8 @@ The Lf used was 2.67
 ### Timestep Length and Elapsed Duration (N & dt)
 * N = 10
 * dt = 0.1
-This values of ten steps into the future and dt of 100ms provide a stable and fast implementation. This are also the values recommended in the project information video. I found the dt especially useful when implementing latency.  I experimented with larger  N values in-conjunction with smaller time steps but found that this put to grater load on processing.  Larger time steps were not reactive enough and the car left the track.
+
+This values of N, ten steps into the future and dt of 100ms provide a stable and fast implementation. This are also the values recommended in the project information video. I found the dt especially useful when implementing latency.  I experimented with larger  N values in-conjunction with smaller time steps but found that this put to grater load on processing.  Larger time steps were not reactive enough and the car left the track.
 
 ### Polynomial Fitting and MPC Preprocessing
 A third order polynomial was used.  The x, y, and psi were set to zero in the car coordinate system so as to simplify the solution solving.  All other preprocessing was as defined in the lesson.

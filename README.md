@@ -2,6 +2,30 @@
 Self-Driving Car Engineer Nanodegree Program
 
 ---
+## Implementation
+### The Model
+The model was taken from the model defined in the lessons:
+The equations for the model:
+* x_[t+1] = x[t] + v[t] * cos(psi[t]) * dt
+* y_[t+1] = y[t] + v[t] * sin(psi[t]) * dt
+* psi_[t+1] = psi[t] + v[t] / Lf * delta[t] * dt
+* v_[t+1] = v[t] + a[t] * dt
+* cte[t+1] = f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt
+* epsi[t+1] = psi[t] - psides[t] + v[t] * delta[t] / Lf * dt
+The Lf used was 2.67
+
+### Timestep Length and Elapsed Duration (N & dt)
+* N = 10
+* dt = 0.1
+This values of ten steps into the future and dt of 100ms provide a stable and fast implementation. This are also the values recommended in the project information video. I found the dt especially useful when implementing latency.  I experimented with larger  N values in-conjunction with smaller time steps but found that this put to grater load on processing.  Larger time steps were not reactive enough and the car left the track.
+
+### Polynomial Fitting and MPC Preprocessing
+A third order polynomial was used.  The x, y, and psi were set to zero in the car coordinate system so as to simplify the solution solving.  All other preprocessing was as defined in the lesson.
+
+### Model Predictive Control with Latency
+I dealt with the latency by use previous actuations (i.e. from the previous dt (100 ms behind) when feeding the solver)
+
+---
 
 ## Dependencies
 
@@ -19,7 +43,7 @@ Self-Driving Car Engineer Nanodegree Program
   * Run either `install-mac.sh` or `install-ubuntu.sh`.
   * If you install from source, checkout to commit `e94b6e1`, i.e.
     ```
-    git clone https://github.com/uWebSockets/uWebSockets 
+    git clone https://github.com/uWebSockets/uWebSockets
     cd uWebSockets
     git checkout e94b6e1
     ```
@@ -42,7 +66,7 @@ Self-Driving Car Engineer Nanodegree Program
        per this [forum post](https://discussions.udacity.com/t/incorrect-checksum-for-freed-object/313433/19).
   * Linux
     * You will need a version of Ipopt 3.12.1 or higher. The version available through `apt-get` is 3.11.x. If you can get that version to work great but if not there's a script `install_ipopt.sh` that will install Ipopt. You just need to download the source from the Ipopt [releases page](https://www.coin-or.org/download/source/Ipopt/).
-    * Then call `install_ipopt.sh` with the source directory as the first argument, ex: `sudo bash install_ipopt.sh Ipopt-3.12.1`. 
+    * Then call `install_ipopt.sh` with the source directory as the first argument, ex: `sudo bash install_ipopt.sh Ipopt-3.12.1`.
   * Windows: TODO. If you can use the Linux subsystem and follow the Linux instructions.
 * [CppAD](https://www.coin-or.org/CppAD/)
   * Mac: `brew install cppad`
